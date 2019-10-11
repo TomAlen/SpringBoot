@@ -5,14 +5,13 @@ import com.tomalen.springlanuch.DTO.QuestionDTO;
 import com.tomalen.springlanuch.Enum.CommentEnumType;
 import com.tomalen.springlanuch.Servrice.CommentService;
 import com.tomalen.springlanuch.Servrice.QuestionService;
-import com.tomalen.springlanuch.pojo.Question;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
+
 
 /**
  * Author:钟炜宏
@@ -22,11 +21,14 @@ import java.util.List;
 @Controller
 public class QuestionController {
 
-    @Autowired
-    private QuestionService questionService;
+    private final QuestionService questionService;
 
-    @Autowired
-    private CommentService commentService;
+    private final CommentService commentService;
+
+    public QuestionController(QuestionService questionService, CommentService commentService) {
+        this.questionService = questionService;
+        this.commentService = commentService;
+    }
 
     @GetMapping("/question/{id}")
     public String getQuestion(@PathVariable("id")Integer id,

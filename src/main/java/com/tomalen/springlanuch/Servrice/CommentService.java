@@ -26,23 +26,26 @@ import java.util.stream.Collectors;
 @Service
 public class CommentService {
 
-    @Autowired
-    private CommentMapper commentMapper;
+    private final CommentMapper commentMapper;
 
-    @Autowired
-    private QuestionMapper questionMapper;
+    private final QuestionMapper questionMapper;
 
-    @Autowired
-    private QuestionExtMapper questionExtMapper;
+    private final QuestionExtMapper questionExtMapper;
 
-    @Autowired
-    private UserMapper userMapper;
+    private final UserMapper userMapper;
 
-    @Autowired
-    private CommentExtMapper commentExtMapper;
+    private final CommentExtMapper commentExtMapper;
 
-    @Autowired
-    private NotificationMapper notificationMapper;
+    private final NotificationMapper notificationMapper;
+
+    public CommentService(CommentMapper commentMapper, QuestionMapper questionMapper, QuestionExtMapper questionExtMapper, UserMapper userMapper, CommentExtMapper commentExtMapper, NotificationMapper notificationMapper) {
+        this.commentMapper = commentMapper;
+        this.questionMapper = questionMapper;
+        this.questionExtMapper = questionExtMapper;
+        this.userMapper = userMapper;
+        this.commentExtMapper = commentExtMapper;
+        this.notificationMapper = notificationMapper;
+    }
 
     //添加评论 添加事务
     @Transactional
