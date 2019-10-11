@@ -1,0 +1,344 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${question.title}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <link rel="stylesheet" href="/css/tomalen.css">
+    <link rel="stylesheet" href="/css/editormd.preview.css"/>
+
+    <script src="/js/jquery-1.8.0.min.js"></script>
+    <script src="/js/moment.js"></script>
+    <!--markdown编辑器-->
+
+    <script src="/js/lib/marked.min.js"></script>
+    <script src="/js/lib/prettify.min.js"></script>
+    <script src="/js/editormd.min.js" type="application/javascript"></script>
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<!--嵌入导航栏-->
+<div th:insert="navigation :: nav"></div>
+<div class="container-fluid main">
+    <div class="row">
+        <!--正文-->
+        <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+            <h3 style="margin-top: 25px"><span th:text="${question.title}"></span></h3>
+            <span class="text-desc">
+                作者：<span th:text="${question.user.name}"></span> |
+                发布时间：<span th:text="${#dates.format(question.gmtCreate,'yyyy-MM-dd HH:mm:ss')}"></span> |
+                浏览数：<span th:text="${question.viewCount}"></span>
+            </span>
+            <!--描述-->
+            <hr>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="preview-question">
+                <textarea style="display: none;" th:text="${question.description}"> </textarea>
+            </div>
+            <script type="text/javascript">
+                $(function () {
+                    editormd.markdownToHTML("preview-question", {});
+                });
+            </script>
+
+            <!--标签-->
+            <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <!--对标签进行遍历-->
+                <span class="label label-primary" style="margin-right: 8px;" th:each="tag : ${question.tag.split(',')}">
+                    <span class="glyphicon glyphicon-tags"></span>
+                    <span class="label label-primary" th:text="${tag}"></span>
+                </span>
+            </div>
+
+            <!--编辑-->
+            <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <a th:href="@{'/publish/' + ${question.id}}" class="question-menu" style="color: #999; font-size: 13px"
+                   th:if="${session.user != null && session.user.id == question.creator}">
+                     <span class="glyphicon glyphicon-pencil" aria-hidden="true">编辑
+                     </span>
+                </a>
+            </div>
+            <!--回复个数-->
+            <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <h3>
+                    <span th:text="${question.commentCount}"></span> 个回复
+                </h3>
+            </div>
+
+            <!--回复布局-->
+            <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="comment_list">
+                <div class="media" th:each="comment : ${comments}"
+                     style="padding-bottom: 15px;margin-bottom: 15px;border-bottom: 1px solid #eee">
+                    <div class="media-left">
+                        <a href="#">
+                            <img class="media-object img-rounded" style="width: 39px"
+                                 th:src="${comment.user.avatarUrl}">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading" style="padding-top: 10px">
+                            <span th:text="${comment.user.name}"></span>
+                        </h4>
+                        <div th:text="${comment.content}"></div>
+                        <div class="span-menu">
+                            <span class="glyphicon glyphicon-thumbs-up icon"
+                                  style="margin-right: 6px;cursor: pointer"></span>
+                            <span style="margin-right: 6px;cursor: pointer" th:data="${comment.id}"
+                                  onclick="ByComment(this)">
+                                <span class="glyphicon glyphicon-comment icon"></span>
+                                <span th:text="${comment.commentCount}"></span>
+                            </span>
+                            <!--bootstrap的向右浮动快速样式-->
+                            <span class="pull-right text-desc"
+                                  th:text="${#dates.format(question.gmtCreate,'yyyy-MM-dd')}"></span>
+                        </div>
+
+                        <!--二级评论-->
+                        <!--利用getJson的方式拼接元素-->
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 collapse" th:id="${'comment-' + comment.id}"
+                             style="margin-top: 15px;border: 1px solid #eee;padding-top: 20px;border-radius: 5px;">
+
+                            <!--<div class="media" th:each="comment : ${comments}"  style="padding-bottom: 15px;margin-bottom: 15px;border-bottom: 1px solid #eee">
+                                <div class="media-left">
+                                        <img class="media-object img-rounded" style="width: 39px" th:src="${comment.user.avatarUrl}">
+                                </div>
+                                <div class="media-body">
+                                    <h4 class="media-heading" style="padding-top: 10px">
+                                        <span th:text="${comment.user.name}"></span>
+                                    </h4>
+                                    <div th:text="${comment.content}"></div>
+                                    <div class="span-menu">
+                                       &lt;!&ndash; <span class="glyphicon glyphicon-thumbs-up icon" style="margin-right: 6px;cursor: pointer"></span>
+                                        <span class="glyphicon glyphicon-comment icon" style="margin-right: 6px;cursor: pointer" th:data="${comment.id}" onclick="ByComment(this)"></span>&ndash;&gt;
+                                        &lt;!&ndash;bootstrap的向右浮动快速样式&ndash;&gt;
+                                        <span class="pull-right text-desc" th:text="${#dates.format(question.gmtCreate,'yyyy-MM-dd')}"></span>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 collapse" th:id="${'comment-' + comment.id}">
+                                    </div>
+                                </div>
+                            </div>-->
+
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <input type="text" class="form-control" id="ReComment" placeholder="请输入评论..."
+                                       th:id="${'input-' + comment.id}">
+                                <button type="button" class="btn btn-success pull-right" style="margin: 15px 0"
+                                        th:data-id="${comment.id}" onclick="replay(this)">评论
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h4>
+                    提交回复
+                </h4>
+            </div>
+
+            <!--回复输入框布局-->
+            <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="comment_section">
+                <div class="media">
+                    <div class="media-left">
+                        <a href="#">
+                            <img class="media-object img-rounded" style="width: 39px"
+                                 th:src="${question.user.avatarUrl}">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading" style="padding-top: 10px">
+                            <span th:text="${question.user.name}"></span>
+                        </h4>
+                    </div>
+                </div>
+                <input type="hidden" id="parent_id" name="parent_id" th:value="${question.id}">
+                <!--上下边距为10px，左右为0-->
+                <textarea id="content" name="content" class="form-control" rows="3" style="margin: 10px 0"></textarea>
+                <!--向左浮动，上边距为10px-->
+                <button type="button" class="btn btn-success" style="float: right;margin-top: 10px" onclick="post()">
+                    回复
+                </button>
+            </div>
+        </div>
+
+        <!--右方问题-->
+        <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+            <!--表示在右边栏中充满格-->
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <h4>发起人</h4>
+                <div class="media">
+                    <div class="media-left">
+                        <a href="#">
+                            <img class="media-object img-rounded" style="width: 39px"
+                                 th:src="${question.user.avatarUrl}">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <!--向上的外边距为10个像素-->
+                        <h4 class="media-heading" style="padding-top: 10px">
+                            <span th:text="${question.user.name}"></span>
+                        </h4>
+                    </div>
+                </div>
+                <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <h4>相关问题</h4>
+                <ul style="list-style: none;padding-left: 0;font-size: 14px;line-height: 28px">
+                    <li th:each="related:${RelatedQuestion}">
+                        <a th:href="@{'/question/'+${related.id}}" th:text="${related.title}"></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+
+
+    //对共用的方法进行封装
+    function comment(parentId, type, content) {
+        if (!content) {
+            alert("不能回复空内容！")
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/comment",
+            contentType: "application/json",
+            data: JSON.stringify({
+                parentId: parentId,
+                content: content,
+                type: type
+            }),
+            dataType: "json",
+            success: function (data) {
+                console.log(data)
+                //请求成功
+                if (data.code == 200) {
+                    //隐藏回复框
+                    // $("#comment_section").hide();
+                    window.location.reload();
+                }
+                if (data.code == 2002) {
+                    var isConfirm = window.confirm(data.message);
+                    // 如果点击确定，就表示为要重新登录
+                    if (isConfirm) {
+                        window.open("https://github.com/login/oauth/authorize?client_id=51ebe982d1156e9c3cbc&redirect_uri=http://localhost:8080/callback&scope=user&state=1")
+                        //将数据存储在浏览器数据库中
+                        window.localStorage.setItem("closable", true);
+                    }
+                } else {
+                    //alert(data.message);
+                }
+            }
+        })
+    }
+
+    /**
+     * post请求发送评论
+     */
+    function post() {
+        var parentId = $('#parent_id').val();
+        var content = $("#content").val();
+        //调用
+        comment(parentId, 1, content)
+    }
+
+    function replay(e) {
+        var commentId = e.getAttribute("data-id");
+        var content = $('#input-' + commentId).val();
+        comment(commentId, 2, content)
+    }
+
+
+    //点击评论展开，更改样式
+    function ByComment(e) {
+        var id = e.getAttribute("data");
+        var comment = $('#comment-' + id);
+
+        //判断是否为展开状态
+        var collapse = e.getAttribute("comment-collapse");
+        if (collapse) {
+            //有，就移除class
+            comment.removeClass("in")
+            //移除Attribute
+            e.removeAttribute("comment-collapse")
+            //移除的点击后的样式
+            e.classList.remove("active");
+        } else {
+            var subContaniner = $('#comment-' + id);
+
+            if (subContaniner.children().length != 1) {
+                //子标签的子元素里面有值，说明已经打开过，清空值
+                //折叠二级评论
+                comment.addClass("in");
+                //标记是否展开
+                e.setAttribute("comment-collapse", "in");
+                //添加点击后的样式 高亮状态
+                e.classList.add("active")
+            } else {
+                $.getJSON("/comment/" + id, function (data) {
+                    $.each(data.data.reverse(), function (index, comment) {
+
+                        //左边图片的位置
+                        var MediaLeftElement = $("<div/>", {
+                            "class": "media-left"
+                        }).append($("<img/>", {
+                            "class": "media-object img-rounded",
+                            "style": "width: 39px",
+                            "src": comment.user.avatarUrl
+                        }));
+
+                        var bodyElement = $("<div/>", {
+                            "class": "media-body"
+                        }).append($("<h4/>", {
+                            "class": "media-heading",
+                            "style": "padding-top: 10px",
+                            "html": comment.user.name
+                        })).append($("<div/>", {
+                            "html": comment.content
+                        })).append($("<div/>", {
+                            "class": "menu"
+                        })).append($("<span/>", {
+                            "class": "pull-right text-desc",
+                            "html": moment(comment.gmtCreate).format('YYYY-MM-DD')
+                        }))
+
+                        //整个媒体的位置
+                        var MediaElement = $("<div/>", {
+                            "class": "media",
+                            "style": "padding-bottom: 15px;margin-bottom: 15px;border-bottom: 1px solid #eee"
+                        }).append(MediaLeftElement)
+                            .append(bodyElement);
+
+                        //foreach循环添加评论
+                        var commentElement = $("<div/>", {
+                            "class": "col-lg-12 col-md-12 col-sm-12 col-xs-12",
+                            // html: comment.content
+                        }).append(MediaElement);
+
+                        //每循环一次取出值存入子标签
+                        subContaniner.prepend(commentElement);
+                    });
+                    //没有就添加
+                    //折叠二级评论
+                    comment.addClass("in");
+                    //标记是否展开
+                    e.setAttribute("comment-collapse", "in");
+                    //添加点击后的样式 高亮状态
+                    e.classList.add("active")
+                })
+            }
+
+        }
+    }
+</script>
+</html>

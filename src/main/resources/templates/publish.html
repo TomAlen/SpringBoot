@@ -1,0 +1,125 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>发布问题</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="/css/tomalen.css">
+
+    <link rel="stylesheet" href="/css/editormd.min.css">
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/js/editormd.min.js" type="application/javascript"></script>
+
+
+</head>
+<body>
+<!--嵌入导航栏-->
+<div th:insert="navigation :: nav"></div>
+<div class="container-fluid main">
+    <div class="row">
+        <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+            <h2><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>发起</h2>
+            <hr>
+            <!--form表单-->
+            <form action="/publish" method="post">
+                <input type="hidden" th:value="${id}">
+                <div class="form-group">
+                    <label for="title">问题标题：</label>
+                    <input type="text" name="title" th:value="${title}" class="form-control" id="title" placeholder="问题标题" autocomplete="off">
+                </div>
+                <div class="form-group" id="question-edit">
+                    <label for="description">问题补充：</label>
+                    <textarea name="description" style="display: none" id="description" th:text="${description}" class="form-control" cols="30" rows="10" placeholder="请输入问题补充">
+
+                    </textarea>
+<!--                    markdown编辑-->
+                    <script type="text/javascript">
+                        $(function() {
+                            var editor = editormd("question-edit", {
+                                width: "100%",
+                                height: 350,
+                                path : "/js/lib/"  // Autoload modules mode, codemirror, marked... dependents libs path
+                            });
+                        });
+                    </script>
+                </div>
+                <div class="form-group">
+                    <label for="tag">添加标签：</label>
+                    <input type="text" class="form-control" th:value="${tag}" id="tag" name="tag" placeholder="输入标签" autocomplete="off" onclick="displayTags()">
+                    <!--自动填入标签-->
+                    <div id="showTags" style="margin-top: 10px;display: none">
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation"  th:each="category,categoryStat : ${tags}" th:class="${categoryStat.first ? 'active' : ''}">
+                                    <a th:href="'#'+${category.categoryTag}" aria-controls="home" role="tab" data-toggle="tab" th:text="${category.categoryTag}"></a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div role="tabpanel" th:id="${category.categoryTag}" th:each="category : ${tags}"
+                                     style="margin: 20px 4px;white-space: normal;"
+                                     th:class="${categoryStat.first ? 'active tab-pane' : 'tab-pane'}" >
+                                    <span>
+                                        <span class="label label-primary" style="margin-right: 8px;white-space: normal" th:each="tagName : ${category.tags}">
+                                            <span class="glyphicon glyphicon-tags" onclick="selectValue(this)" th:data-tag="${tagName}" th:text="${' '+tagName}"></span>
+                                         </span>
+                                    </span>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+                <!--按钮和错误信息-->
+                <div class="container-fluid main">
+                    <div class="row">
+                       <!-- <span class="alert alert-danger" th:text="${error}"></span>-->
+                        <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+                            <div class="alert alert-danger col-lg-12 col-md-12 col-sm-12 col-xs-12"  th:if="${error != null}" th:text="${error}">
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+                            <button type="submit" class="btn btn-primary btn-publish">发布</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
+            <h3>问题发起指南</h3>
+            • 问题标题: 请用精简的语言描述您发布的问题，不超过25字<br>
+            • 问题补充: 详细补充您的问题内容，并确保问题描述清晰直观, 并提供一些相关的资料<br>
+            • 选择标签: 选择一个或者多个合适的标签，用逗号隔开，每个标签不超过10个字<br>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    function selectValue(e) {
+        //拿到定义好的属性值
+        var value = e.getAttribute("data-tag");
+        var preTag = $('#tag').val();
+
+        // 原先的的值与传入的值对比
+        if(preTag.indexOf(value) == -1) {
+            //里面的值不重复
+            if(preTag) {
+                //里面有值
+                $('#tag').val(preTag + "," + value);
+            }else {
+                $('#tag').val(value)
+            }
+        }
+
+    }
+
+    //点击输入标签弹出对应的标签页
+    function displayTags() {
+        $('#showTags').show();
+    }
+
+</script>
+</html>

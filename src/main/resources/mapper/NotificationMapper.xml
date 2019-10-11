@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tomalen.springlanuch.Mapper.NotificationMapper">
+  <resultMap id="BaseResultMap" type="com.tomalen.springlanuch.pojo.Notification">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="notifier" jdbcType="INTEGER" property="notifier" />
+    <result column="receiver" jdbcType="INTEGER" property="receiver" />
+    <result column="outer_id" jdbcType="INTEGER" property="outerId" />
+    <result column="notified_type" jdbcType="INTEGER" property="notifiedType" />
+    <result column="gmt_create" jdbcType="BIGINT" property="gmtCreate" />
+    <result column="notified_status" jdbcType="INTEGER" property="notifiedStatus" />
+    <result column="notifier_name" jdbcType="VARCHAR" property="notifierName" />
+    <result column="out_title" jdbcType="VARCHAR" property="outTitle" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, notifier, receiver, outer_id, notified_type, gmt_create, notified_status, notifier_name, 
+    out_title
+  </sql>
+  <select id="selectByExample" parameterType="com.tomalen.springlanuch.pojo.NotificationExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from notification
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null">
+      <if test="offset != null">
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null">
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from notification
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from notification
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.tomalen.springlanuch.pojo.NotificationExample">
+    delete from notification
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.tomalen.springlanuch.pojo.Notification" useGeneratedKeys="true">
+    insert into notification (notifier, receiver, outer_id, 
+      notified_type, gmt_create, notified_status, 
+      notifier_name, out_title)
+    values (#{notifier,jdbcType=INTEGER}, #{receiver,jdbcType=INTEGER}, #{outerId,jdbcType=INTEGER}, 
+      #{notifiedType,jdbcType=INTEGER}, #{gmtCreate,jdbcType=BIGINT}, #{notifiedStatus,jdbcType=INTEGER}, 
+      #{notifierName,jdbcType=VARCHAR}, #{outTitle,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.tomalen.springlanuch.pojo.Notification" useGeneratedKeys="true">
+    insert into notification
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="notifier != null">
+        notifier,
+      </if>
+      <if test="receiver != null">
+        receiver,
+      </if>
+      <if test="outerId != null">
+        outer_id,
+      </if>
+      <if test="notifiedType != null">
+        notified_type,
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create,
+      </if>
+      <if test="notifiedStatus != null">
+        notified_status,
+      </if>
+      <if test="notifierName != null">
+        notifier_name,
+      </if>
+      <if test="outTitle != null">
+        out_title,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="notifier != null">
+        #{notifier,jdbcType=INTEGER},
+      </if>
+      <if test="receiver != null">
+        #{receiver,jdbcType=INTEGER},
+      </if>
+      <if test="outerId != null">
+        #{outerId,jdbcType=INTEGER},
+      </if>
+      <if test="notifiedType != null">
+        #{notifiedType,jdbcType=INTEGER},
+      </if>
+      <if test="gmtCreate != null">
+        #{gmtCreate,jdbcType=BIGINT},
+      </if>
+      <if test="notifiedStatus != null">
+        #{notifiedStatus,jdbcType=INTEGER},
+      </if>
+      <if test="notifierName != null">
+        #{notifierName,jdbcType=VARCHAR},
+      </if>
+      <if test="outTitle != null">
+        #{outTitle,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.tomalen.springlanuch.pojo.NotificationExample" resultType="java.lang.Long">
+    select count(*) from notification
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update notification
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.notifier != null">
+        notifier = #{record.notifier,jdbcType=INTEGER},
+      </if>
+      <if test="record.receiver != null">
+        receiver = #{record.receiver,jdbcType=INTEGER},
+      </if>
+      <if test="record.outerId != null">
+        outer_id = #{record.outerId,jdbcType=INTEGER},
+      </if>
+      <if test="record.notifiedType != null">
+        notified_type = #{record.notifiedType,jdbcType=INTEGER},
+      </if>
+      <if test="record.gmtCreate != null">
+        gmt_create = #{record.gmtCreate,jdbcType=BIGINT},
+      </if>
+      <if test="record.notifiedStatus != null">
+        notified_status = #{record.notifiedStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.notifierName != null">
+        notifier_name = #{record.notifierName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.outTitle != null">
+        out_title = #{record.outTitle,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update notification
+    set id = #{record.id,jdbcType=INTEGER},
+      notifier = #{record.notifier,jdbcType=INTEGER},
+      receiver = #{record.receiver,jdbcType=INTEGER},
+      outer_id = #{record.outerId,jdbcType=INTEGER},
+      notified_type = #{record.notifiedType,jdbcType=INTEGER},
+      gmt_create = #{record.gmtCreate,jdbcType=BIGINT},
+      notified_status = #{record.notifiedStatus,jdbcType=INTEGER},
+      notifier_name = #{record.notifierName,jdbcType=VARCHAR},
+      out_title = #{record.outTitle,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.tomalen.springlanuch.pojo.Notification">
+    update notification
+    <set>
+      <if test="notifier != null">
+        notifier = #{notifier,jdbcType=INTEGER},
+      </if>
+      <if test="receiver != null">
+        receiver = #{receiver,jdbcType=INTEGER},
+      </if>
+      <if test="outerId != null">
+        outer_id = #{outerId,jdbcType=INTEGER},
+      </if>
+      <if test="notifiedType != null">
+        notified_type = #{notifiedType,jdbcType=INTEGER},
+      </if>
+      <if test="gmtCreate != null">
+        gmt_create = #{gmtCreate,jdbcType=BIGINT},
+      </if>
+      <if test="notifiedStatus != null">
+        notified_status = #{notifiedStatus,jdbcType=INTEGER},
+      </if>
+      <if test="notifierName != null">
+        notifier_name = #{notifierName,jdbcType=VARCHAR},
+      </if>
+      <if test="outTitle != null">
+        out_title = #{outTitle,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.tomalen.springlanuch.pojo.Notification">
+    update notification
+    set notifier = #{notifier,jdbcType=INTEGER},
+      receiver = #{receiver,jdbcType=INTEGER},
+      outer_id = #{outerId,jdbcType=INTEGER},
+      notified_type = #{notifiedType,jdbcType=INTEGER},
+      gmt_create = #{gmtCreate,jdbcType=BIGINT},
+      notified_status = #{notifiedStatus,jdbcType=INTEGER},
+      notifier_name = #{notifierName,jdbcType=VARCHAR},
+      out_title = #{outTitle,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

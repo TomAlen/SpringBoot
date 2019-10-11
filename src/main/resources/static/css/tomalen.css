@@ -1,0 +1,43 @@
+/*body体为定义的颜色*/
+body{
+    background-color: #efefef;
+}
+/*外边距30px为白色*/
+.main{
+    background-color: white;
+    margin: 30px;
+}
+.btn-publish{
+    margin-bottom: 15px;
+    float: right;
+}
+
+.text-desc{
+    font-size: 12px;
+    font-weight: normal;
+    color: #999;
+}
+
+.profile-section{
+    margin-top: 15px;
+}
+
+.question-menu {
+    color: #999;
+    font-size: 13px;
+}
+
+.span-menu {
+    color: #999;
+}
+
+.span-menu .icon:hover {
+    color: darkcyan;
+}
+
+.active {
+    color: darkcyan;
+}
+
+
+
