@@ -42,4 +42,15 @@ public class IndexController {
         model.addAttribute("search",search);
         return "index";
     }
+
+
+    /**
+     * 跳转到登录页面
+     * @return
+     */
+    @GetMapping("/toLogin")
+    public String toLogin() {
+        return "Login";
+    }
+
 }
